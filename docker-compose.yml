@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+    colorize-microservice:
+        build:
+            context: ./colorize_microservice
+        image: colorizer_im
+        restart: unless-stopped
+        expose:
+            - "5000"
+        deploy:
+            replicas: 3
+
+
+    nginx-balance:
+        image: nginx
+        container_name: nginx-balance_cont
+        restart: unless-stopped
+        volumes:
+            - ./nginx_balance/nginx.conf:/etc/nginx/nginx.conf:ro
+        depends_on:
+            - colorize-microservice
+        ports:
+            - "5000:5001"
+
+
+    nginx-html:
+        image: nginx
+        container_name: nginx-html_cont
+        restart: unless-stopped
+        volumes:
+            - ./html:/usr/share/nginx/html:ro
+        depends_on:
+            - nginx-balance
+        ports:
+            - "8080:80"
+
+
