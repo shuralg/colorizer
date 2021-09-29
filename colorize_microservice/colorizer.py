@@ -61,9 +61,10 @@ def image_colorize():
     sampled_z = Variable(Tensor(np.random.normal(0, 1, (main_opt.count_images, main_opt.latent_dim))))
 
     # Generate samples
-    result_img = generator(real_a, sampled_z)
+    with torch.no_grad():
+        result_img = generator(real_a, sampled_z)
 
-    result_img = torch.mean(result_img.data.cpu(), 0)
+        result_img = torch.mean(result_img.data.cpu(), 0)
     # save_image(torch.min(input_, result_img), normalize=True)
     img_io = BytesIO()
     save_image(result_img, img_io, normalize=True, format="PNG")
